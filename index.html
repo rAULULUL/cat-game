@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐱 模拟养猫</title>
+    <title>模拟养猫</title>
     <style>
         * {
             margin: 0;
@@ -56,9 +56,10 @@
             transform: scale(1.05);
         }
         
-        .cat-option .emoji {
-            font-size: 50px;
-            display: block;
+        .cat-option .preview-cat {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 5px;
         }
         
         .cat-option .name {
@@ -146,24 +147,177 @@
             margin-bottom: 20px;
         }
         
-        .cat-emoji {
-            font-size: 100px;
+        /* CSS 猫咪容器 */
+        .cat-container {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 10px;
+            position: relative;
             animation: bounce 2s infinite;
-            display: block;
-            margin-bottom: 10px;
-            transition: all 0.5s ease;
         }
         
         /* 不同阶段的猫咪大小 */
-        .cat-emoji.level-0 { font-size: 60px; }
-        .cat-emoji.level-1 { font-size: 75px; }
-        .cat-emoji.level-2 { font-size: 90px; }
-        .cat-emoji.level-3 { font-size: 105px; }
-        .cat-emoji.level-4 { font-size: 120px; }
+        .cat-container.level-0 { transform: scale(0.5); }
+        .cat-container.level-1 { transform: scale(0.65); }
+        .cat-container.level-2 { transform: scale(0.8); }
+        .cat-container.level-3 { transform: scale(0.95); }
+        .cat-container.level-4 { transform: scale(1.1); }
         
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
+        }
+        
+        /* 猫咪身体部件 */
+        .cat-body {
+            width: 100px;
+            height: 80px;
+            border-radius: 50% 50% 45% 45%;
+            position: absolute;
+            bottom: 20px;
+            left: 25px;
+        }
+        
+        .cat-head {
+            width: 70px;
+            height: 60px;
+            border-radius: 50%;
+            position: absolute;
+            top: 20px;
+            left: 40px;
+        }
+        
+        .cat-ear-left, .cat-ear-right {
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 30px solid;
+            position: absolute;
+            top: 0;
+        }
+        
+        .cat-ear-left {
+            left: 35px;
+            transform: rotate(-20deg);
+        }
+        
+        .cat-ear-right {
+            right: 35px;
+            transform: rotate(20deg);
+        }
+        
+        .cat-eye-left, .cat-eye-right {
+            width: 12px;
+            height: 12px;
+            background: #333;
+            border-radius: 50%;
+            position: absolute;
+            top: 40px;
+        }
+        
+        .cat-eye-left { left: 50px; }
+        .cat-eye-right { right: 50px; }
+        
+        .cat-nose {
+            width: 8px;
+            height: 6px;
+            background: #ff9999;
+            border-radius: 50%;
+            position: absolute;
+            top: 52px;
+            left: 71px;
+        }
+        
+        .cat-mouth {
+            width: 20px;
+            height: 10px;
+            border: 2px solid #333;
+            border-top: none;
+            border-radius: 0 0 20px 20px;
+            position: absolute;
+            top: 58px;
+            left: 65px;
+        }
+        
+        .cat-tail {
+            width: 15px;
+            height: 60px;
+            border-radius: 10px;
+            position: absolute;
+            bottom: 30px;
+            right: 15px;
+            transform: rotate(30deg);
+            transform-origin: bottom;
+            animation: tailWag 2s infinite;
+        }
+        
+        @keyframes tailWag {
+            0%, 100% { transform: rotate(30deg); }
+            50% { transform: rotate(50deg); }
+        }
+        
+        .cat-paw-left, .cat-paw-right {
+            width: 20px;
+            height: 15px;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 15px;
+        }
+        
+        .cat-paw-left { left: 40px; }
+        .cat-paw-right { right: 40px; }
+        
+        /* 英短 - 灰色 */
+        .british .cat-body, .british .cat-head, .british .cat-tail, .british .cat-paw-left, .british .cat-paw-right {
+            background: #7a7a7a;
+        }
+        .british .cat-ear-left, .british .cat-ear-right {
+            border-bottom-color: #7a7a7a;
+        }
+        
+        /* 曼基康 - 橘色 */
+        .munchkin .cat-body, .munchkin .cat-head, .munchkin .cat-tail, .munchkin .cat-paw-left, .munchkin .cat-paw-right {
+            background: #ff9f43;
+        }
+        .munchkin .cat-ear-left, .munchkin .cat-ear-right {
+            border-bottom-color: #ff9f43;
+        }
+        
+        /* 暹罗 - 奶油色 */
+        .siamese .cat-body, .siamese .cat-head, .siamese .cat-tail, .siamese .cat-paw-left, .siamese .cat-paw-right {
+            background: #f5e6d3;
+        }
+        .siamese .cat-ear-left, .siamese .cat-ear-right {
+            border-bottom-color: #8b6f47;
+        }
+        .siamese .cat-ear-left::after, .siamese .cat-ear-right::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: -8px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 15px solid #8b6f47;
+        }
+        
+        /* 猫王特殊装饰 */
+        .cat-container.level-4 .cat-crown {
+            display: block;
+        }
+        
+        .cat-crown {
+            display: none;
+            width: 50px;
+            height: 25px;
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            position: absolute;
+            top: -5px;
+            left: 50px;
+            clip-path: polygon(0% 100%, 20% 50%, 40% 100%, 60% 50%, 80% 100%, 100% 50%, 100% 100%);
+            z-index: 10;
         }
         
         .cat-name-display {
@@ -299,19 +453,49 @@
     <div class="container">
         <!-- 开始界面 -->
         <div id="startScreen">
-            <h1>🐱 选择你的猫咪</h1>
+            <h1>选择你的猫咪</h1>
             
             <div class="cat-selection">
                 <div class="cat-option" data-type="british">
-                    <span class="emoji">🐈‍⬛</span>
+                    <div class="preview-cat british">
+                        <div class="cat-container">
+                            <div class="cat-ear-left"></div>
+                            <div class="cat-ear-right"></div>
+                            <div class="cat-head"></div>
+                            <div class="cat-body"></div>
+                            <div class="cat-tail"></div>
+                            <div class="cat-paw-left"></div>
+                            <div class="cat-paw-right"></div>
+                        </div>
+                    </div>
                     <span class="name">英短</span>
                 </div>
                 <div class="cat-option" data-type="munchkin">
-                    <span class="emoji">🐈</span>
+                    <div class="preview-cat munchkin">
+                        <div class="cat-container">
+                            <div class="cat-ear-left"></div>
+                            <div class="cat-ear-right"></div>
+                            <div class="cat-head"></div>
+                            <div class="cat-body"></div>
+                            <div class="cat-tail"></div>
+                            <div class="cat-paw-left"></div>
+                            <div class="cat-paw-right"></div>
+                        </div>
+                    </div>
                     <span class="name">曼基康</span>
                 </div>
                 <div class="cat-option" data-type="siamese">
-                    <span class="emoji">🐱</span>
+                    <div class="preview-cat siamese">
+                        <div class="cat-container">
+                            <div class="cat-ear-left"></div>
+                            <div class="cat-ear-right"></div>
+                            <div class="cat-head"></div>
+                            <div class="cat-body"></div>
+                            <div class="cat-tail"></div>
+                            <div class="cat-paw-left"></div>
+                            <div class="cat-paw-right"></div>
+                        </div>
+                    </div>
                     <span class="name">暹罗</span>
                 </div>
             </div>
@@ -327,7 +511,21 @@
         <!-- 游戏界面 -->
         <div id="gameScreen" class="game-screen">
             <div class="cat-display">
-                <div class="cat-emoji level-0" id="catEmoji">🐱</div>
+                <div class="cat-container level-0" id="catContainer">
+                    <div class="cat-crown"></div>
+                    <div class="cat-ear-left"></div>
+                    <div class="cat-ear-right"></div>
+                    <div class="cat-head">
+                        <div class="cat-eye-left"></div>
+                        <div class="cat-eye-right"></div>
+                        <div class="cat-nose"></div>
+                        <div class="cat-mouth"></div>
+                    </div>
+                    <div class="cat-body"></div>
+                    <div class="cat-tail"></div>
+                    <div class="cat-paw-left"></div>
+                    <div class="cat-paw-right"></div>
+                </div>
                 <div class="cat-name-display">
                     <span id="displayName">咪咪</span>
                     <span class="level-badge" id="levelBadge">Lv.1</span>
@@ -338,7 +536,7 @@
             <div class="stats">
                 <div class="stat-item">
                     <div class="stat-label">
-                        <span>🍖 饱食度</span>
+                        <span>饱食度</span>
                         <span id="hungerText">80%</span>
                     </div>
                     <div class="stat-bar">
@@ -348,7 +546,7 @@
                 
                 <div class="stat-item">
                     <div class="stat-label">
-                        <span>💧 口渴度</span>
+                        <span>口渴度</span>
                         <span id="thirstText">80%</span>
                     </div>
                     <div class="stat-bar">
@@ -358,7 +556,7 @@
                 
                 <div class="stat-item">
                     <div class="stat-label">
-                        <span>🧹 清洁度</span>
+                        <span>清洁度</span>
                         <span id="hygieneText">80%</span>
                     </div>
                     <div class="stat-bar">
@@ -368,7 +566,7 @@
                 
                 <div class="stat-item">
                     <div class="stat-label">
-                        <span>😊 开心度</span>
+                        <span>开心度</span>
                         <span id="happinessText">80%</span>
                     </div>
                     <div class="stat-bar">
@@ -378,7 +576,7 @@
                 
                 <div class="stat-item">
                     <div class="stat-label">
-                        <span>💕 亲密度</span>
+                        <span>亲密度</span>
                         <span id="intimacyText">0%</span>
                     </div>
                     <div class="stat-bar">
@@ -388,10 +586,10 @@
             </div>
             
             <div class="actions">
-                <button class="btn-action btn-feed" onclick="feed()">🍖 喂食</button>
-                <button class="btn-action btn-water" onclick="giveWater()">💧 喂水</button>
-                <button class="btn-action btn-clean" onclick="clean()">🧹 铲屎</button>
-                <button class="btn-action btn-play" onclick="play()">🎾 玩耍</button>
+                <button class="btn-action btn-feed" onclick="feed()">喂食</button>
+                <button class="btn-action btn-water" onclick="giveWater()">喂水</button>
+                <button class="btn-action btn-clean" onclick="clean()">铲屎</button>
+                <button class="btn-action btn-play" onclick="play()">玩耍</button>
             </div>
         </div>
     </div>
@@ -409,25 +607,22 @@
     </div>
 
     <script>
-        // 猫咪数据 - 每个品种有5个成长阶段的emoji，从小到大，越来越胖
+        // 猫咪数据
         const catTypes = {
             british: { 
                 name: '英短', 
                 desc: '圆润可爱，性格温顺',
-                // 小奶猫 -> 幼猫 -> 少年 -> 胖猫 -> 大胖猫王
-                emojis: ['😺', '🐱', '🐈‍⬛', '🐈‍⬛', '👑']
+                class: 'british'
             },
             munchkin: { 
                 name: '曼基康', 
                 desc: '短腿萌猫，活泼好动',
-                // 小奶猫 -> 幼橘猫 -> 少年橘 -> 胖橘 -> 橘猫王
-                emojis: ['😸', '🐱', '🐈', '🐈', '🦁']
+                class: 'munchkin'
             },
             siamese: { 
                 name: '暹罗', 
                 desc: '聪明机灵，爱聊天',
-                // 小奶猫 -> 幼暹罗 -> 少年暹罗 -> 成年暹罗 -> 暹罗王
-                emojis: ['😹', '🐱', '😻', '😻', '🐯']
+                class: 'siamese'
             }
         };
         
@@ -478,41 +673,38 @@
             gameData.type = selectedType;
             gameData.name = name;
             
+            // 设置猫咪品种样式
+            const catContainer = document.getElementById('catContainer');
+            catContainer.className = 'cat-container level-0 ' + catTypes[selectedType].class;
+            
             document.getElementById('startScreen').style.display = 'none';
             document.getElementById('gameScreen').style.display = 'block';
             
             updateDisplay();
-            showMessage(`欢迎来到新家，${name}！`);
+            showMessage('欢迎来到新家，' + name + '！');
             
             // 启动状态衰减
             setInterval(decayStats, 5000);
         }
         
-        // 获取当前阶段的猫咪emoji
-        function getCatEmoji() {
-            const cat = catTypes[gameData.type];
-            return cat.emojis[gameData.level];
-        }
-        
-        // 更新猫咪大小类名
+        // 更新猫咪大小
         function updateCatSize() {
-            const catEmoji = document.getElementById('catEmoji');
+            const catContainer = document.getElementById('catContainer');
             // 移除所有等级类名
             for (let i = 0; i < 5; i++) {
-                catEmoji.classList.remove(`level-${i}`);
+                catContainer.classList.remove('level-' + i);
             }
             // 添加当前等级类名
-            catEmoji.classList.add(levels[gameData.level].size);
+            catContainer.classList.add(levels[gameData.level].size);
         }
         
         // 更新显示
         function updateDisplay() {
             const cat = catTypes[gameData.type];
-            document.getElementById('catEmoji').textContent = getCatEmoji();
             updateCatSize();
             document.getElementById('displayName').textContent = gameData.name;
-            document.getElementById('catInfo').textContent = `${cat.name} · ${levels[gameData.level].name}`;
-            document.getElementById('levelBadge').textContent = `Lv.${gameData.level + 1}`;
+            document.getElementById('catInfo').textContent = cat.name + ' · ' + levels[gameData.level].name;
+            document.getElementById('levelBadge').textContent = 'Lv.' + (gameData.level + 1);
             
             updateStatBar('hunger', gameData.hunger);
             updateStatBar('thirst', gameData.thirst);
@@ -523,8 +715,8 @@
         
         function updateStatBar(type, value) {
             value = Math.max(0, Math.min(100, value));
-            document.getElementById(`${type}Bar`).style.width = `${value}%`;
-            document.getElementById(`${type}Text`).textContent = `${Math.round(value)}%`;
+            document.getElementById(type + 'Bar').style.width = value + '%';
+            document.getElementById(type + 'Text').textContent = Math.round(value) + '%';
         }
         
         // 状态衰减
@@ -537,20 +729,20 @@
             updateDisplay();
             
             // 提醒
-            if (gameData.hunger < 20) showMessage(`${gameData.name} 饿啦，快喂食！`);
-            else if (gameData.thirst < 20) showMessage(`${gameData.name} 渴啦，快喂水！`);
-            else if (gameData.hygiene < 20) showMessage(`猫砂盆该清理啦！`);
+            if (gameData.hunger < 20) showMessage(gameData.name + ' 饿啦，快喂食！');
+            else if (gameData.thirst < 20) showMessage(gameData.name + ' 渴啦，快喂水！');
+            else if (gameData.hygiene < 20) showMessage('猫砂盆该清理啦！');
         }
         
         // 喂食
         function feed() {
             if (gameData.hunger >= 100) {
-                showMessage(`${gameData.name} 已经吃饱啦！`);
+                showMessage(gameData.name + ' 已经吃饱啦！');
                 return;
             }
             gameData.hunger = Math.min(100, gameData.hunger + 20);
             gameData.intimacy = Math.min(1000, gameData.intimacy + 5);
-            showMessage(`🍖 ${gameData.name} 开心地吃着猫粮！`);
+            showMessage(gameData.name + ' 开心地吃着猫粮！');
             checkLevelUp();
             updateDisplay();
         }
@@ -558,12 +750,12 @@
         // 喂水
         function giveWater() {
             if (gameData.thirst >= 100) {
-                showMessage(`${gameData.name} 不渴哦！`);
+                showMessage(gameData.name + ' 不渴哦！');
                 return;
             }
             gameData.thirst = Math.min(100, gameData.thirst + 25);
             gameData.intimacy = Math.min(1000, gameData.intimacy + 3);
-            showMessage(`💧 ${gameData.name} 咕嘟咕嘟喝水~`);
+            showMessage(gameData.name + ' 咕嘟咕嘟喝水~');
             checkLevelUp();
             updateDisplay();
         }
@@ -571,12 +763,12 @@
         // 铲屎
         function clean() {
             if (gameData.hygiene >= 100) {
-                showMessage(`猫砂盆已经很干净啦！`);
+                showMessage('猫砂盆已经很干净啦！');
                 return;
             }
             gameData.hygiene = 100;
             gameData.intimacy = Math.min(1000, gameData.intimacy + 8);
-            showMessage(`🧹 清理完毕！${gameData.name} 很满意~`);
+            showMessage('清理完毕！' + gameData.name + ' 很满意~');
             checkLevelUp();
             updateDisplay();
         }
@@ -587,7 +779,7 @@
             gameData.hunger = Math.max(0, gameData.hunger - 5);
             gameData.thirst = Math.max(0, gameData.thirst - 5);
             gameData.intimacy = Math.min(1000, gameData.intimacy + 10);
-            showMessage(`🎾 ${gameData.name} 玩得好开心！亲密度 +10`);
+            showMessage(gameData.name + ' 玩得好开心！亲密度 +10');
             checkLevelUp();
             updateDisplay();
         }
@@ -608,9 +800,7 @@
         
         // 显示成长弹窗
         function showGrowthPopup(levelName) {
-            const cat = catTypes[gameData.type];
-            const newEmoji = getCatEmoji();
-            document.getElementById('growthText').innerHTML = `${gameData.name} 成长为 ${levelName} 啦！<br><span style="font-size: 80px;">${newEmoji}</span>`;
+            document.getElementById('growthText').innerHTML = gameData.name + ' 成长为 ' + levelName + ' 啦！';
             document.getElementById('overlay').classList.add('show');
             document.getElementById('growthPopup').classList.add('show');
         }
@@ -625,7 +815,7 @@
             const msg = document.getElementById('message');
             msg.textContent = text;
             msg.classList.add('show');
-            setTimeout(() => msg.classList.remove('show'), 2000);
+            setTimeout(function() { msg.classList.remove('show'); }, 2000);
         }
     </script>
 </body>
