@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐱 模拟养猫</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        /* 选择猫咪种类 */
+        .cat-selection {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        
+        .cat-option {
+            text-align: center;
+            padding: 15px;
+            border: 3px solid #ddd;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .cat-option:hover, .cat-option.selected {
+            border-color: #667eea;
+            background: #f0f0ff;
+            transform: scale(1.05);
+        }
+        
+        .cat-option .emoji {
+            font-size: 50px;
+            display: block;
+        }
+        
+        .cat-option .name {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* 输入框 */
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+        }
+        
+        .input-group input:focus {
+            border-color: #667eea;
+        }
+        
+        /* 按钮 */
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-action {
+            padding: 12px 20px;
+            margin: 5px;
+            border-radius: 10px;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-feed { background: #ff9a9e; color: white; }
+        .btn-water { background: #a8edea; color: #333; }
+        .btn-clean { background: #d299c2; color: white; }
+        .btn-play { background: #fef9d7; color: #333; }
+        
+        .btn-action:hover {
+            transform: scale(1.05);
+        }
+        
+        /* 游戏界面 */
+        .game-screen {
+            display: none;
+        }
+        
+        .cat-display {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .cat-emoji {
+            font-size: 100px;
+            animation: bounce 2s infinite;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .cat-name-display {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 10px;
+        }
+        
+        .cat-info {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* 状态条 */
+        .stats {
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            margin-bottom: 12px;
+        }
+        
+        .stat-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .stat-bar {
+            height: 12px;
+            background: #eee;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .stat-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+        
+        .stat-hunger { background: linear-gradient(90deg, #ff9a9e, #fecfef); }
+        .stat-thirst { background: linear-gradient(90deg, #a8edea, #fed6e3); }
+        .stat-hygiene { background: linear-gradient(90deg, #d299c2, #fef9d7); }
+        .stat-happiness { background: linear-gradient(90deg, #ffecd2, #fcb69f); }
+        .stat-intimacy { background: linear-gradient(90deg, #667eea, #764ba2); }
+        
+        /* 动作按钮区 */
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        /* 消息提示 */
+        .message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+        
+        .message.show {
+            opacity: 1;
+        }
+        
+        /* 等级徽章 */
+        .level-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        
+        /* 成长动画 */
+        .growth-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 1001;
+        }
+        
+        .growth-popup.show {
+            display: block;
+            animation: popIn 0.5s ease;
+        }
+        
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 1000;
+        }
+        
+        .overlay.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 开始界面 -->
+        <div id="startScreen">
+            <h1>🐱 选择你的猫咪</h1>
+            
+            <div class="cat-selection">
+                <div class="cat-option" data-type="british">
+                    <span class="emoji">🐈‍⬛</span>
+                    <span class="name">英短</span>
+                </div>
+                <div class="cat-option" data-type="munchkin">
+                    <span class="emoji">🐈</span>
+                    <span class="name">曼基康</span>
+                </div>
+                <div class="cat-option" data-type="siamese">
+                    <span class="emoji">🐱</span>
+                    <span class="name">暹罗</span>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label>给猫咪取个名字：</label>
+                <input type="text" id="catName" placeholder="例如：咪咪、橘子、豆豆...">
+            </div>
+            
+            <button class="btn btn-primary" onclick="startGame()">开始养猫</button>
+        </div>
+        
+        <!-- 游戏界面 -->
+        <div id="gameScreen" class="game-screen">
+            <div class="cat-display">
+                <div class="cat-emoji" id="catEmoji">🐱</div>
+                <div class="cat-name-display">
+                    <span id="displayName">咪咪</span>
+                    <span class="level-badge" id="levelBadge">Lv.1</span>
+                </div>
+                <div class="cat-info" id="catInfo">英短 · 幼猫</div>
+            </div>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-label">
+                        <span>🍖 饱食度</span>
+                        <span id="hungerText">80%</span>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-fill stat-hunger" id="hungerBar" style="width: 80%"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-label">
+                        <span>💧 口渴度</span>
+                        <span id="thirstText">80%</span>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-fill stat-thirst" id="thirstBar" style="width: 80%"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-label">
+                        <span>🧹 清洁度</span>
+                        <span id="hygieneText">80%</span>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-fill stat-hygiene" id="hygieneBar" style="width: 80%"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-label">
+                        <span>😊 开心度</span>
+                        <span id="happinessText">80%</span>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-fill stat-happiness" id="happinessBar" style="width: 80%"></div>
+                    </div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-label">
+                        <span>💕 亲密度</span>
+                        <span id="intimacyText">0%</span>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-fill stat-intimacy" id="intimacyBar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <button class="btn-action btn-feed" onclick="feed()">🍖 喂食</button>
+                <button class="btn-action btn-water" onclick="giveWater()">💧 喂水</button>
+                <button class="btn-action btn-clean" onclick="clean()">🧹 铲屎</button>
+                <button class="btn-action btn-play" onclick="play()">🎾 玩耍</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 消息提示 -->
+    <div class="message" id="message"></div>
+    
+    <!-- 成长弹窗 -->
+    <div class="overlay" id="overlay"></div>
+    <div class="growth-popup" id="growthPopup">
+        <div style="font-size: 60px; margin-bottom: 10px;">✨</div>
+        <h2 style="color: #667eea; margin-bottom: 10px;">恭喜升级！</h2>
+        <p id="growthText">你的猫咪长大啦！</p>
+        <button class="btn btn-primary" onclick="closeGrowthPopup()" style="margin-top: 15px;">太好了！</button>
+    </div>
+
+    <script>
+        // 猫咪数据 - 每个品种有5个成长阶段的emoji
+        const catTypes = {
+            british: { 
+                name: '英短', 
+                desc: '圆润可爱，性格温顺',
+                emojis: ['🐈‍⬛', '🐈‍⬛', '🐈‍⬛', '🐈‍⬛', '👑']
+            },
+            munchkin: { 
+                name: '曼基康', 
+                desc: '短腿萌猫，活泼好动',
+                emojis: ['🐈', '🐈', '🐈', '🐈', '🦁']
+            },
+            siamese: { 
+                name: '暹罗', 
+                desc: '聪明机灵，爱聊天',
+                emojis: ['🐱', '🐱', '🐱', '🐱', '🐯']
+            }
+        };
+        
+        const levels = [
+            { name: '幼猫', minIntimacy: 0 },
+            { name: '少年猫', minIntimacy: 30 },
+            { name: '青年猫', minIntimacy: 70 },
+            { name: '成年猫', minIntimacy: 150 },
+            { name: '猫王', minIntimacy: 300 }
+        ];
+        
+        let gameData = {
+            type: null,
+            name: '',
+            hunger: 80,
+            thirst: 80,
+            hygiene: 80,
+            happiness: 80,
+            intimacy: 0,
+            level: 0
+        };
+        
+        let selectedType = null;
+        
+        // 选择猫咪种类
+        document.querySelectorAll('.cat-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.cat-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedType = this.dataset.type;
+            });
+        });
+        
+        // 开始游戏
+        function startGame() {
+            const name = document.getElementById('catName').value.trim();
+            
+            if (!selectedType) {
+                showMessage('请先选择一只猫咪！');
+                return;
+            }
+            
+            if (!name) {
+                showMessage('请给猫咪取个名字！');
+                return;
+            }
+            
+            gameData.type = selectedType;
+            gameData.name = name;
+            
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            
+            updateDisplay();
+            showMessage(`欢迎来到新家，${name}！`);
+            
+            // 启动状态衰减
+            setInterval(decayStats, 5000);
+        }
+        
+        // 获取当前阶段的猫咪emoji
+        function getCatEmoji() {
+            const cat = catTypes[gameData.type];
+            return cat.emojis[gameData.level];
+        }
+        
+        // 更新显示
+        function updateDisplay() {
+            const cat = catTypes[gameData.type];
+            document.getElementById('catEmoji').textContent = getCatEmoji();
+            document.getElementById('displayName').textContent = gameData.name;
+            document.getElementById('catInfo').textContent = `${cat.name} · ${levels[gameData.level].name}`;
+            document.getElementById('levelBadge').textContent = `Lv.${gameData.level + 1}`;
+            
+            updateStatBar('hunger', gameData.hunger);
+            updateStatBar('thirst', gameData.thirst);
+            updateStatBar('hygiene', gameData.hygiene);
+            updateStatBar('happiness', gameData.happiness);
+            updateStatBar('intimacy', gameData.intimacy);
+        }
+        
+        function updateStatBar(type, value) {
+            value = Math.max(0, Math.min(100, value));
+            document.getElementById(`${type}Bar`).style.width = `${value}%`;
+            document.getElementById(`${type}Text`).textContent = `${Math.round(value)}%`;
+        }
+        
+        // 状态衰减
+        function decayStats() {
+            gameData.hunger = Math.max(0, gameData.hunger - 2);
+            gameData.thirst = Math.max(0, gameData.thirst - 3);
+            gameData.hygiene = Math.max(0, gameData.hygiene - 1);
+            gameData.happiness = Math.max(0, gameData.happiness - 1);
+            
+            updateDisplay();
+            
+            // 提醒
+            if (gameData.hunger < 20) showMessage(`${gameData.name} 饿啦，快喂食！`);
+            else if (gameData.thirst < 20) showMessage(`${gameData.name} 渴啦，快喂水！`);
+            else if (gameData.hygiene < 20) showMessage(`猫砂盆该清理啦！`);
+        }
+        
+        // 喂食
+        function feed() {
+            if (gameData.hunger >= 100) {
+                showMessage(`${gameData.name} 已经吃饱啦！`);
+                return;
+            }
+            gameData.hunger = Math.min(100, gameData.hunger + 20);
+            gameData.intimacy = Math.min(1000, gameData.intimacy + 5);
+            showMessage(`🍖 ${gameData.name} 开心地吃着猫粮！`);
+            checkLevelUp();
+            updateDisplay();
+        }
+        
+        // 喂水
+        function giveWater() {
+            if (gameData.thirst >= 100) {
+                showMessage(`${gameData.name} 不渴哦！`);
+                return;
+            }
+            gameData.thirst = Math.min(100, gameData.thirst + 25);
+            gameData.intimacy = Math.min(1000, gameData.intimacy + 3);
+            showMessage(`💧 ${gameData.name} 咕嘟咕嘟喝水~`);
+            checkLevelUp();
+            updateDisplay();
+        }
+        
+        // 铲屎
+        function clean() {
+            if (gameData.hygiene >= 100) {
+                showMessage(`猫砂盆已经很干净啦！`);
+                return;
+            }
+            gameData.hygiene = 100;
+            gameData.intimacy = Math.min(1000, gameData.intimacy + 8);
+            showMessage(`🧹 清理完毕！${gameData.name} 很满意~`);
+            checkLevelUp();
+            updateDisplay();
+        }
+        
+        // 玩耍
+        function play() {
+            gameData.happiness = Math.min(100, gameData.happiness + 15);
+            gameData.hunger = Math.max(0, gameData.hunger - 5);
+            gameData.thirst = Math.max(0, gameData.thirst - 5);
+            gameData.intimacy = Math.min(1000, gameData.intimacy + 10);
+            showMessage(`🎾 ${gameData.name} 玩得好开心！亲密度 +10`);
+            checkLevelUp();
+            updateDisplay();
+        }
+        
+        // 检查升级
+        function checkLevelUp() {
+            const currentLevel = gameData.level;
+            for (let i = levels.length - 1; i >= 0; i--) {
+                if (gameData.intimacy >= levels[i].minIntimacy) {
+                    if (i > currentLevel) {
+                        gameData.level = i;
+                        showGrowthPopup(levels[i].name);
+                    }
+                    break;
+                }
+            }
+        }
+        
+        // 显示成长弹窗
+        function showGrowthPopup(levelName) {
+            const cat = catTypes[gameData.type];
+            const newEmoji = getCatEmoji();
+            document.getElementById('growthText').innerHTML = `${gameData.name} 成长为 ${levelName} 啦！<br><span style="font-size: 50px;">${newEmoji}</span>`;
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('growthPopup').classList.add('show');
+        }
+        
+        function closeGrowthPopup() {
+            document.getElementById('overlay').classList.remove('show');
+            document.getElementById('growthPopup').classList.remove('show');
+        }
+        
+        // 显示消息
+        function showMessage(text) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.classList.add('show');
+            setTimeout(() => msg.classList.remove('show'), 2000);
+        }
+    </script>
+</body>
+</html>
