@@ -151,7 +151,15 @@
             animation: bounce 2s infinite;
             display: block;
             margin-bottom: 10px;
+            transition: all 0.5s ease;
         }
+        
+        /* 不同阶段的猫咪大小 */
+        .cat-emoji.level-0 { font-size: 60px; }
+        .cat-emoji.level-1 { font-size: 75px; }
+        .cat-emoji.level-2 { font-size: 90px; }
+        .cat-emoji.level-3 { font-size: 105px; }
+        .cat-emoji.level-4 { font-size: 120px; }
         
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
@@ -319,7 +327,7 @@
         <!-- 游戏界面 -->
         <div id="gameScreen" class="game-screen">
             <div class="cat-display">
-                <div class="cat-emoji" id="catEmoji">🐱</div>
+                <div class="cat-emoji level-0" id="catEmoji">🐱</div>
                 <div class="cat-name-display">
                     <span id="displayName">咪咪</span>
                     <span class="level-badge" id="levelBadge">Lv.1</span>
@@ -401,31 +409,34 @@
     </div>
 
     <script>
-        // 猫咪数据 - 每个品种有5个成长阶段的emoji
+        // 猫咪数据 - 每个品种有5个成长阶段的emoji，从小到大，越来越胖
         const catTypes = {
             british: { 
                 name: '英短', 
                 desc: '圆润可爱，性格温顺',
-                emojis: ['🐈‍⬛', '🐈‍⬛', '🐈‍⬛', '🐈‍⬛', '👑']
+                // 小灰猫 -> 幼猫 -> 少年 -> 胖猫 -> 大胖猫王
+                emojis: ['🐁', '🐈‍⬛', '🐈‍⬛', '🐈‍⬛', '👑']
             },
             munchkin: { 
                 name: '曼基康', 
                 desc: '短腿萌猫，活泼好动',
-                emojis: ['🐈', '🐈', '🐈', '🐈', '🦁']
+                // 小橘鼠 -> 幼橘猫 -> 少年橘 -> 胖橘 -> 橘猫王
+                emojis: ['🐀', '🐈', '🐈', '🐈', '🦁']
             },
             siamese: { 
                 name: '暹罗', 
                 desc: '聪明机灵，爱聊天',
-                emojis: ['🐱', '🐱', '🐱', '🐱', '🐯']
+                // 小奶猫 -> 幼暹罗 -> 少年暹罗 -> 成年暹罗 -> 暹罗王
+                emojis: ['🐭', '🐱', '🐱', '🐱', '🐯']
             }
         };
         
         const levels = [
-            { name: '幼猫', minIntimacy: 0 },
-            { name: '少年猫', minIntimacy: 30 },
-            { name: '青年猫', minIntimacy: 70 },
-            { name: '成年猫', minIntimacy: 150 },
-            { name: '猫王', minIntimacy: 300 }
+            { name: '幼猫', minIntimacy: 0, size: 'level-0' },
+            { name: '少年猫', minIntimacy: 30, size: 'level-1' },
+            { name: '青年猫', minIntimacy: 70, size: 'level-2' },
+            { name: '成年猫', minIntimacy: 150, size: 'level-3' },
+            { name: '猫王', minIntimacy: 300, size: 'level-4' }
         ];
         
         let gameData = {
@@ -483,10 +494,22 @@
             return cat.emojis[gameData.level];
         }
         
+        // 更新猫咪大小类名
+        function updateCatSize() {
+            const catEmoji = document.getElementById('catEmoji');
+            // 移除所有等级类名
+            for (let i = 0; i < 5; i++) {
+                catEmoji.classList.remove(`level-${i}`);
+            }
+            // 添加当前等级类名
+            catEmoji.classList.add(levels[gameData.level].size);
+        }
+        
         // 更新显示
         function updateDisplay() {
             const cat = catTypes[gameData.type];
             document.getElementById('catEmoji').textContent = getCatEmoji();
+            updateCatSize();
             document.getElementById('displayName').textContent = gameData.name;
             document.getElementById('catInfo').textContent = `${cat.name} · ${levels[gameData.level].name}`;
             document.getElementById('levelBadge').textContent = `Lv.${gameData.level + 1}`;
@@ -587,7 +610,7 @@
         function showGrowthPopup(levelName) {
             const cat = catTypes[gameData.type];
             const newEmoji = getCatEmoji();
-            document.getElementById('growthText').innerHTML = `${gameData.name} 成长为 ${levelName} 啦！<br><span style="font-size: 50px;">${newEmoji}</span>`;
+            document.getElementById('growthText').innerHTML = `${gameData.name} 成长为 ${levelName} 啦！<br><span style="font-size: 80px;">${newEmoji}</span>`;
             document.getElementById('overlay').classList.add('show');
             document.getElementById('growthPopup').classList.add('show');
         }
